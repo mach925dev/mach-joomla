@@ -1,4 +1,33 @@
 #!/usr/bin/perl -w
+
+=head1 NAME
+
+Joomla backup
+
+=head1 SYNOPSIS
+
+Backup script which supplants the web host's stock one 
+
+=head1 DESCRIPTION
+
+This script is run for a single site at a time (e.g. jmlMACH). A number of parameters may be supplied with command line switches; use the -h switch to see what's available. Other parameters are found in a configuration file. The sitename (supplied with the -s command line switches), is used as the prefix of the site's corresponding configuration file name.
+
+A single tarball is created from a single run. That archive holds the Joomla filesystem tree and a dump of the site's MySQL database. The script will optionally prune old files, keeping only the last i backups (i as configured with the -r command line switch).
+
+All backups of a single site are kept in a directory dedicated to that site. A single run of this script only considers a subset of backups in that directory for the sake of pruning. The name of the backup (-b command line switch) is used as part of the file name for the archives that backup has created. For example, if the backup is run with a site name of "jmlMACH" and a backup name of "daily", it will produce archives named "jmlMACH_daily_<timestring>.tar.gz. Only archives having that name, modulo the timestamp, will be considered during the pruning step.
+
+This script may be run on demand. By default, the script will not do any pruning. The -c flag is required to trigger the pruning. Unless you're absolutely sure you want to prune files (presumably created by scheduled runs of this script), then don't set that flag. Finally, if you run the script yourself, then do not leave the archive in the standard backup directory. This would cause the automatic pruning to be somewhat haphazard.
+
+=head1 AUTHOR
+
+CaveDude
+
+=head1 DATE CREATED
+
+April 27, 2015
+
+=cut
+
 use strict;
 use warnings;
 use Getopt::Long;
