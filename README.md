@@ -35,7 +35,7 @@ A backup is a single tarball. In the archive is the installation directory tree 
 
 ## The code
 
-This repository is the definitive source of the backup code as well as any other utilities written to support the site. Of course, the only code that matters is what's installed and running on the web host. Rarely, if ever, should the utilities be modified directly on the host. Rather, they should be modified here, tested with a local installation of Joomla, and then copied to the host.
+This repository is the definitive source of the backup code as well as any other utilities written to support the site. Of course, the only code that matters is what's installed and running on the web host. Rarely, if ever, should the utilities be modified directly on the host. Rather, the versions in the git repository should be modified, tested with a local installation of Joomla, and then copied to the host.
 
 Backups must not be tested on the web host. It has happened that a couple tests of a backup caused us to exceed our allowed disk I/O limits. As a consequence, Namecheap throttled our site for over 10 minutes. 
 
