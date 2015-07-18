@@ -31,6 +31,8 @@ April 27, 2015
 use strict;
 use warnings;
 use Getopt::Long;
+use FindBin qw($Bin);
+my $script_path = $Bin; # give our path variable a better name.
 
 # variable defaults
 my $help = 0;
@@ -81,7 +83,7 @@ elsif($sitename eq "default")
 	exit;
 }
 
-my $INCLUDEFILE = "$sitename.pl";
+my $INCLUDEFILE = "$script_path/$sitename.pl";
 if (!-e $INCLUDEFILE) 
 {
 	print "Your configuration file is missing! Please create it.\n";
@@ -90,7 +92,7 @@ if (!-e $INCLUDEFILE)
 
 
 # load the MySQL and Linux account details from our config file.
-require "$sitename.pl";
+require "$script_path/$sitename.pl";
 
 my $user = get_user();
 my $password = get_password();
@@ -101,11 +103,14 @@ my $account = get_account();
 # set backup file name, and source/destination paths.
 my ($sec,$min,$hour,$day,$month,$yr19) = localtime(time);
 my $year = $yr19 + 1900;
-my $time_string = sprintf "%d-%02d-%02d\_%02d:%02d:%02d", $year, $month, $day, $hour, $min, $sec;
+my $mon = ++$month; #localtime outputs month as 0-11.
+my $time_string = sprintf "%d-%02d-%02d\_%02d:%02d:%02d", $year, $mon, $day, $hour, $min, $sec;
 
-my $backup_filename = "$sitename\_$backup\_$time_string";
-my $joomla_dir = "/home/$account/public_html/$sitename";
-my $backup_dir = "/home/$account/mach925/sitebackups/$sitename";
+my $backup_prefix = "$sitename\_$backup";
+my $backup_filename = "$backup_prefix\_$time_string";
+my $home = $ENV{"HOME"};
+my $joomla_dir = "$home/public_html/$sitename";
+my $backup_dir = "$home/mach925/sitebackups/$sitename";
 
 # runs a quick test to ensure the system's environment supports our script and exits.
 if($test == 1)
@@ -137,8 +142,8 @@ sub delete_loop
 	my $file_count = 0;
 	while($FILE = readdir(DIR)) 
 	{
-		# Check to see if the file is a .tar.gz
-		if($FILE =~ /\.tar.gz$/i)
+		# Check to see if the file is a .tar.gz and it matches our backup set.
+		if($FILE =~ /\.tar.gz$/i && $FILE =~ /^$backup_prefix?/)
 		{
 			++$file_count;
 		}
@@ -183,7 +188,7 @@ sub delete_loop
 
 sub delete_oldest_file
 {
-	my $oldest_file = (sort{(stat $a)[10] <=> (stat $b)[10]}glob "$backup_dir/*.tar.gz")[0];
+	my $oldest_file = (sort{(stat $a)[10] <=> (stat $b)[10]}glob "$backup_dir/$backup_prefix*.tar.gz")[0];
 	if($debug == 1)
 	{
 		print "[DEBUG]Deleting file: $oldest_file. \n";
