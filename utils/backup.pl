@@ -62,11 +62,11 @@ if($help)
 	print " -s=name Specify the site name. \033[1mThis is a required switch.\n\033[0m";
 	print " -h Display this help and exit.\n";
 	print " -v Display debug messages.\n";
-	print " -t Creates a test file in the backup location, deletes it, and exits.\n";
+	print " -t Create a test file in the backup location, deletes it, and exits.\n";
 	print " -b=name Specify the backup name. (Default is daily)\n";
-	print " -p Prune the oldest single backup.\n";
-	print " -r=number Specify the number of backups to keep before deleting. (Default is 7)\n";
-	print " -c Deletes all of the oldest backups that exceed the rollover number.\n";
+	print " -p The master switch for pruning. If -p is not specified then *no* pruning will be done.\n";
+	print " -r=number Specify the number of backups to keep before pruning. (Default is 7)\n";
+	print " -c Prune all of the oldest backups that exceed the rollover number.\n    Without this, at most 1 file will be deleted, no matter the value specified with -r.\n";
 	exit;
 }
 
@@ -98,7 +98,6 @@ my $user = get_user();
 my $password = get_password();
 my $host = get_host();
 my $db = get_db();
-my $account = get_account();
 
 # set backup file name, and source/destination paths.
 my ($sec,$min,$hour,$day,$month,$yr19) = localtime(time);
@@ -109,7 +108,8 @@ my $time_string = sprintf "%d-%02d-%02d\_%02d:%02d:%02d", $year, $mon, $day, $ho
 my $backup_prefix = "$sitename\_$backup";
 my $backup_filename = "$backup_prefix\_$time_string";
 my $home = $ENV{"HOME"};
-my $joomla_dir = "$home/public_html/$sitename";
+my $websites_dir = "$home/public_html";
+my $joomla_dir = "$websites_dir/$sitename";
 my $backup_dir = "$home/mach925/sitebackups/$sitename";
 
 # runs a quick test to ensure the system's environment supports our script and exits.
@@ -208,7 +208,7 @@ sub create_backup
 	{
 		print "[DEBUG]Creating archive... \n";
 	}
-	system("cd $joomla_dir; tar -zcvf $backup_dir/$backup_filename.tar.gz * > /dev/null");
+	system("cd $websites_dir; tar -zcvf $backup_dir/$backup_filename.tar.gz $sitename > /dev/null");
 }
 
 sub run_test

@@ -28,7 +28,5 @@ sub get_user { return "myuser" };
 sub get_password { return "mypassword" };
 # MySQL database name
 sub get_db      { return "mydatabase" };
-# The unix account user name - this lets us determine filesystem locations relative to its home directory
-sub get_account { return "mylinuxaccount" };
 
 1;
